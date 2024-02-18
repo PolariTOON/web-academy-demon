@@ -1,0 +1,19 @@
+{
+  "name": "web-academy-demon",
+  "version": "0.0.0",
+  "description": "Vérification du démon de la formation web à destination des élèves de Telecom Nancy",
+  "main": "package/_worker.js",
+  "scripts": {
+    "start": "npx wrangler pages dev package"
+  },
+  "repository": "https://github.com/PolariTOON/web-academy-demon",
+  "author": "Tristan LE GODAIS",
+  "contributors": [
+    "Alexis EL MRINI"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

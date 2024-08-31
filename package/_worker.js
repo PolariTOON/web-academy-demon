@@ -14,32 +14,31 @@ const splitHeaderValues = function* splitHeaderValues(values) {
 	const {length} = values;
 	let index = 0;
 	let value = "";
-	while (index < length) {
+	for (;;) {
 		const pattern = /[^",]*/uy;
 		pattern.lastIndex = index;
 		const match = values.match(pattern);
 		index = pattern.lastIndex;
 		const part = match?.[0] ?? "";
 		value = `${value}${part}`;
-		if (index < length) {
-			if (values.startsWith("\"", index)) {
-				++index;
-				const pattern = /[^"\\]*(\\[^][^"\\]*)*["\\]?/uy;
-				pattern.lastIndex = index;
-				const match = values.match(pattern);
-				index = pattern.lastIndex;
-				const part = match?.[0] ?? "";
-				value = `${value}${part}`;
-				if (index < length) {
-					continue;
-				}
-			} else {
-				++index;
+		if (index < length && values.startsWith("\"", index)) {
+			const pattern = /"[^"\\]*(\\[^][^"\\]*)*["\\]?/uy;
+			pattern.lastIndex = index;
+			const match = values.match(pattern);
+			index = pattern.lastIndex;
+			const part = match?.[0] ?? "";
+			value = `${value}${part}`;
+			if (index < length) {
+				continue;
 			}
 		}
 		value = value.replaceAll(/^[\t ]+|[\t ]+$/gu, ""),
 		yield value;
 		value = "";
+		if (index >= length) {
+			break;
+		}
+		++index;
 	}
 };
 const getMimeTypeEssence = function getMimeTypeEssence(headers) {
@@ -97,9 +96,9 @@ const getFormData = async function getFormData(request) {
 	const fields = new FormData();
 	return fields;
 };
-const headerRequirements = {
+const headerRequirements = Object.assign(Object.create(null), {
 	"content-type": true,
-};
+});
 const headerValidators = Object.assign(Object.create(null), {
 	"content-type"(value) {
 		if (typeof value !== "string") {
@@ -108,7 +107,7 @@ const headerValidators = Object.assign(Object.create(null), {
 		return value.search(/^application\/x-www-form-urlencoded$/u) !== -1;
 	},
 });
-const fieldRequirements = {
+const fieldRequirements = Object.assign(Object.create(null), {
 	"_charset_": false,
 	"nom": true,
 	"prenom": true,
@@ -118,7 +117,7 @@ const fieldRequirements = {
 	"vol": true,
 	"telepathie": false,
 	"telekinesie": false,
-};
+});
 const fieldValidators = Object.assign(Object.create(null), {
 	"_charset_"(value) {
 		if (typeof value !== "string") {
